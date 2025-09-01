@@ -1,0 +1,57 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fda-drug-tools:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fda-drug-tools:latest'
+      - '.'
+    
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'gcr.io/$PROJECT_ID/fda-drug-tools'
+    
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'fda-drug-tools'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/fda-drug-tools:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '100'
+      - '--concurrency'
+      - '80'
+      - '--timeout'
+      - '60s'
+
+# Store images in Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/fda-drug-tools:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/fda-drug-tools:latest'
+
+# Build configuration
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for the entire build
+timeout: '1200s'
