@@ -251,7 +251,7 @@ get_drug_description = _create_simple_tool(
 )
 
 # Create FastAPI app with health check
-app = mcp.create_app(path="/mcp")
+app = mcp.http_app(path="/mcp")
 
 @app.get("/")
 async def health_check():
