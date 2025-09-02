@@ -250,27 +250,14 @@ get_drug_description = _create_simple_tool(
     "Returns FDA-approved product description. Supports filtering by drug name, NDC, manufacturer, dosage form, and route."
 )
 
-# Create FastAPI app with health check
-app = mcp.http_app(path="/mcp")
-
-@app.get("/")
-async def health_check():
-    """Health check endpoint for Google Cloud Run"""
-    return {"status": "healthy", "service": "FDA Drug Tools MCP Server"}
-
-@app.get("/health")
-async def health():
-    """Alternative health check endpoint"""
-    return {"status": "ok"}
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    import uvicorn
-    
     log.info(f"Starting FDA Drug Tools MCP server on port {port}")
-    uvicorn.run(
-        app,
+    
+    mcp.run(
+        transport="http",
         host="0.0.0.0",
         port=port,
+        path="/mcp",
         log_level="info"
     )
