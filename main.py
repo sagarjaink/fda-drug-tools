@@ -1,6 +1,6 @@
 """
 FDA Drug Tools MCP server optimized for Google Cloud Run deployment.
-Exposes 7 tools for querying FDA drug label data.
+Exposes 8 tools for querying FDA drug label data.
 Transport: HTTP (Claude.ai compatible)
 Endpoint: /mcp
 """
@@ -250,6 +250,11 @@ get_drug_description = _create_simple_tool(
     "Returns FDA-approved product description. Supports filtering by drug name, NDC, manufacturer, dosage form, and route."
 )
 
+get_inactive_ingredients = _create_simple_tool(
+        "inactive_ingredient",
+        "get_inactive_ingredients",
+        "Returns inactive, non-medicinal ingredients in a drug product. Supports filtering by drug name, NDC, manufacturer, dosage form, and route."
+)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     log.info(f"Starting FDA Drug Tools MCP server on port {port}")
